@@ -1,4 +1,4 @@
-package nftstorage
+package ipfscluster
 
 import (
 	"context"
@@ -12,9 +12,10 @@ import (
 	ipfsstorage "github.com/jianbo-zh/ipfs-storage"
 )
 
-func (cli *client) Status(ctx context.Context, cid string) (pinStatus ipfsstorage.PinStatus, err error) {
+// UploadCar upload car
+func (cli *client) UploadCid(ctx context.Context, fcid ipfsstorage.UploadCidParam) (cid string, err error) {
 
-	url, _ := url.Parse(cli.conf.endpoint + "/check/" + cid)
+	url, _ := url.Parse(cli.conf.endpoint + "/pins/" + fcid.CID)
 
 	req := http.Request{
 		URL: url,
@@ -23,7 +24,7 @@ func (cli *client) Status(ctx context.Context, cid string) (pinStatus ipfsstorag
 			// "Content-Type":  {"application/car"},
 			"Accept": {"application/json"},
 		},
-		Method: http.MethodGet,
+		Method: http.MethodPost,
 	}
 
 	httpCli := http.Client{}
@@ -46,7 +47,7 @@ func (cli *client) Status(ctx context.Context, cid string) (pinStatus ipfsstorag
 		return
 	}
 
-	var res Response200
+	var res ResponseCid200
 	err = json.Unmarshal(resBytes, &res)
 	if err != nil {
 		err = errors.New(
@@ -61,5 +62,5 @@ func (cli *client) Status(ctx context.Context, cid string) (pinStatus ipfsstorag
 
 	fmt.Printf("%s", string(resBytes))
 
-	return res.Value.Pin.Status, nil
+	return res.CID.String(), nil
 }

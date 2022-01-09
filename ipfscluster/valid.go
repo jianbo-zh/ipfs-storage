@@ -1,4 +1,4 @@
-package nftstorage
+package ipfscluster
 
 import (
 	"context"

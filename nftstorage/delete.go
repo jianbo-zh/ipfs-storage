@@ -3,18 +3,16 @@ package nftstorage
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 
 	"github.com/jianbo-zh/go-errors"
-	ipfsstorage "github.com/jianbo-zh/ipfs-storage"
 )
 
-func (cli *client) Status(ctx context.Context, cid string) (pinStatus ipfsstorage.PinStatus, err error) {
+func (cli *client) Delete(ctx context.Context, cid string) (ok bool, err error) {
 
-	url, _ := url.Parse(cli.conf.endpoint + "/check/" + cid)
+	url, _ := url.Parse(cli.conf.endpoint + "/" + cid)
 
 	req := http.Request{
 		URL: url,
@@ -23,7 +21,7 @@ func (cli *client) Status(ctx context.Context, cid string) (pinStatus ipfsstorag
 			// "Content-Type":  {"application/car"},
 			"Accept": {"application/json"},
 		},
-		Method: http.MethodGet,
+		Method: http.MethodDelete,
 	}
 
 	httpCli := http.Client{}
@@ -41,16 +39,11 @@ func (cli *client) Status(ctx context.Context, cid string) (pinStatus ipfsstorag
 		return
 	}
 
-	if response.StatusCode != 200 {
-		err = errors.New(fmt.Sprintf("[%d]%s", response.StatusCode, string(resBytes)))
-		return
-	}
-
-	var res Response200
-	err = json.Unmarshal(resBytes, &res)
+	var resp200 DeleteResponse200
+	err = json.Unmarshal(resBytes, &resp200)
 	if err != nil {
 		err = errors.New(
-			"json unmarshal response error",
+			"json unmarshal error",
 			errors.WithError(err),
 			errors.WithContext(errors.Context{
 				"response": string(resBytes),
@@ -59,7 +52,13 @@ func (cli *client) Status(ctx context.Context, cid string) (pinStatus ipfsstorag
 		return
 	}
 
-	fmt.Printf("%s", string(resBytes))
+	if !resp200.OK {
+		logging.Infow(
+			"delete cid",
+			"cid", cid,
+			"response", string(resBytes),
+		)
+	}
 
-	return res.Value.Pin.Status, nil
+	return resp200.OK, nil
 }

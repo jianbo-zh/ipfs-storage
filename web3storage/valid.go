@@ -1,4 +1,4 @@
-package nftstorage
+package web3storage
 
 import (
 	"context"

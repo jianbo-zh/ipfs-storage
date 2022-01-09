@@ -1,4 +1,4 @@
-package nftstorage
+package ipfscluster
 
 import (
 	"errors"
@@ -11,7 +11,7 @@ const (
 	MAX_REQUEST_BODY_SIZE = 1024 * 1024 * 99 // 99 MiB
 )
 
-var logging = log.Logger("nftstorage")
+var logging = log.Logger("ipfscluster")
 
 var ErrRequestBodyLimit = errors.New("body size max limit 99MiB")
 

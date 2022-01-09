@@ -1,4 +1,4 @@
-package nftstorage
+package web3storage
 
 import (
 	"context"
@@ -12,9 +12,15 @@ import (
 	ipfsstorage "github.com/jianbo-zh/ipfs-storage"
 )
 
+const (
+	PIN_STATUS_QUEUED  = "PinQueued"
+	PIN_STATUS_PINNING = "Pinning"
+	PIN_STATUS_PINNED  = "Pinned"
+)
+
 func (cli *client) Status(ctx context.Context, cid string) (pinStatus ipfsstorage.PinStatus, err error) {
 
-	url, _ := url.Parse(cli.conf.endpoint + "/check/" + cid)
+	url, _ := url.Parse(cli.conf.endpoint + "/status/" + cid)
 
 	req := http.Request{
 		URL: url,
@@ -46,7 +52,7 @@ func (cli *client) Status(ctx context.Context, cid string) (pinStatus ipfsstorag
 		return
 	}
 
-	var res Response200
+	var res StatusResponse200
 	err = json.Unmarshal(resBytes, &res)
 	if err != nil {
 		err = errors.New(
@@ -59,7 +65,30 @@ func (cli *client) Status(ctx context.Context, cid string) (pinStatus ipfsstorag
 		return
 	}
 
+	iPinStatus := ipfsstorage.PIN_STATUS_UNKOWN
+	for _, pin := range res.Pins {
+		if pin.Status == PIN_STATUS_PINNED {
+			iPinStatus = ipfsStorageStatus(pin.Status)
+			break
+		}
+		iPinStatus = ipfsStorageStatus(pin.Status)
+	}
+
 	fmt.Printf("%s", string(resBytes))
 
-	return res.Value.Pin.Status, nil
+	return iPinStatus, nil
+}
+
+// ipfsStorageStatus
+func ipfsStorageStatus(web3Pinstatus string) string {
+	switch web3Pinstatus {
+	case PIN_STATUS_QUEUED:
+		return ipfsstorage.PIN_STATUS_QUEUED
+	case PIN_STATUS_PINNING:
+		return ipfsstorage.PIN_STATUS_PINNING
+	case PIN_STATUS_PINNED:
+		return ipfsstorage.PIN_STATUS_PINNED
+	default:
+		return ipfsstorage.PIN_STATUS_UNKOWN
+	}
 }

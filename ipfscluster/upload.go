@@ -1,10 +1,13 @@
-package nftstorage
+package ipfscluster
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"mime/multipart"
 	"net/http"
 	"net/url"
 
@@ -12,18 +15,40 @@ import (
 	ipfsstorage "github.com/jianbo-zh/ipfs-storage"
 )
 
-func (cli *client) Status(ctx context.Context, cid string) (pinStatus ipfsstorage.PinStatus, err error) {
+func (cli *client) Upload(ctx context.Context, file ipfsstorage.UploadParam) (cid string, err error) {
 
-	url, _ := url.Parse(cli.conf.endpoint + "/check/" + cid)
+	if file.Size > MAX_REQUEST_BODY_SIZE {
+		err = ErrRequestBodyLimit
+		return
+	}
+
+	url, _ := url.Parse(cli.conf.endpoint + "/add?cid-version=1")
+
+	bodyBuf := &bytes.Buffer{}
+	bodyWriter := multipart.NewWriter(bodyBuf)
+
+	fileWriter, err := bodyWriter.CreateFormFile("file", file.Name)
+	if err != nil {
+		return cid, errors.New("create form file error", errors.WithError(err))
+	}
+
+	_, err = io.Copy(fileWriter, file.IOReader)
+	if err != nil {
+		return cid, errors.New("io copy error", errors.WithError(err))
+	}
+
+	contentType := bodyWriter.FormDataContentType()
+	bodyWriter.Close()
 
 	req := http.Request{
 		URL: url,
 		Header: http.Header{
-			"Authorization": {"Bearer " + cli.conf.accesstoken},
-			// "Content-Type":  {"application/car"},
-			"Accept": {"application/json"},
+			// "Authorization": {"Bearer " + cli.conf.accesstoken},
+			"Content-Type": {contentType},
+			"Accept":       {"application/json"},
 		},
-		Method: http.MethodGet,
+		Method: http.MethodPost,
+		Body:   io.NopCloser(bodyBuf),
 	}
 
 	httpCli := http.Client{}
@@ -61,5 +86,5 @@ func (cli *client) Status(ctx context.Context, cid string) (pinStatus ipfsstorag
 
 	fmt.Printf("%s", string(resBytes))
 
-	return res.Value.Pin.Status, nil
+	return res.CID.String(), nil
 }

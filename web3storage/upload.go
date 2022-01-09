@@ -1,9 +1,10 @@
-package nftstorage
+package web3storage
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -12,18 +13,25 @@ import (
 	ipfsstorage "github.com/jianbo-zh/ipfs-storage"
 )
 
-func (cli *client) Status(ctx context.Context, cid string) (pinStatus ipfsstorage.PinStatus, err error) {
+func (cli *client) Upload(ctx context.Context, file ipfsstorage.UploadParam) (cid string, err error) {
 
-	url, _ := url.Parse(cli.conf.endpoint + "/check/" + cid)
+	if file.Size > MAX_REQUEST_BODY_SIZE {
+		err = ErrRequestBodyLimit
+		return
+	}
+
+	rurl, _ := url.Parse(cli.conf.endpoint + "/upload")
 
 	req := http.Request{
-		URL: url,
+		URL: rurl,
 		Header: http.Header{
 			"Authorization": {"Bearer " + cli.conf.accesstoken},
 			// "Content-Type":  {"application/car"},
 			"Accept": {"application/json"},
+			"X-NAME": {url.QueryEscape(file.Name)},
 		},
-		Method: http.MethodGet,
+		Method: http.MethodPost,
+		Body:   io.NopCloser(file.IOReader),
 	}
 
 	httpCli := http.Client{}
@@ -61,5 +69,5 @@ func (cli *client) Status(ctx context.Context, cid string) (pinStatus ipfsstorag
 
 	fmt.Printf("%s", string(resBytes))
 
-	return res.Value.Pin.Status, nil
+	return res.CID, nil
 }

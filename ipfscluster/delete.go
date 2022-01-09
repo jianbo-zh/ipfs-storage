@@ -1,4 +1,4 @@
-package nftstorage
+package ipfscluster
 
 import (
 	"context"
@@ -9,21 +9,19 @@ import (
 	"net/url"
 
 	"github.com/jianbo-zh/go-errors"
-	ipfsstorage "github.com/jianbo-zh/ipfs-storage"
 )
 
-func (cli *client) Status(ctx context.Context, cid string) (pinStatus ipfsstorage.PinStatus, err error) {
+func (cli *client) Delete(ctx context.Context, cid string) (ok bool, err error) {
 
-	url, _ := url.Parse(cli.conf.endpoint + "/check/" + cid)
+	url, _ := url.Parse(cli.conf.endpoint + "/pins/" + cid)
 
 	req := http.Request{
 		URL: url,
 		Header: http.Header{
 			"Authorization": {"Bearer " + cli.conf.accesstoken},
-			// "Content-Type":  {"application/car"},
-			"Accept": {"application/json"},
+			"Accept":        {"application/json"},
 		},
-		Method: http.MethodGet,
+		Method: http.MethodDelete,
 	}
 
 	httpCli := http.Client{}
@@ -46,7 +44,7 @@ func (cli *client) Status(ctx context.Context, cid string) (pinStatus ipfsstorag
 		return
 	}
 
-	var res Response200
+	var res DeleteResponse200
 	err = json.Unmarshal(resBytes, &res)
 	if err != nil {
 		err = errors.New(
@@ -59,7 +57,5 @@ func (cli *client) Status(ctx context.Context, cid string) (pinStatus ipfsstorag
 		return
 	}
 
-	fmt.Printf("%s", string(resBytes))
-
-	return res.Value.Pin.Status, nil
+	return true, nil
 }
