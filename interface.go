@@ -6,11 +6,12 @@ import (
 )
 
 const (
-	PIN_STATUS_QUEUED  = "queued"  // queued
-	PIN_STATUS_PINNING = "pinning" // pinning
-	PIN_STATUS_PINNED  = "pinned"  // pinned
-	PIN_STATUS_FAILED  = "failed"  // failed
-	PIN_STATUS_UNKOWN  = "unkown"  // unkown
+	PIN_STATUS_QUEUED   = "queued"   // queued
+	PIN_STATUS_PINNING  = "pinning"  // pinning
+	PIN_STATUS_PINNED   = "pinned"   // pinned
+	PIN_STATUS_FAILED   = "failed"   // failed
+	PIN_STATUS_UNPINNED = "unpinned" // unpinned
+	PIN_STATUS_UNKOWN   = "unkown"   // unkown
 )
 
 type Cid = string

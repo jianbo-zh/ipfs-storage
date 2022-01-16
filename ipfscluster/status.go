@@ -81,11 +81,12 @@ func (cli *client) Status(ctx context.Context, cid string) (pinStatus string, er
 		if pinTrack.Status == TrackerStatusPinned {
 			iPinStatus = ipfsStorageStatus(pinTrack.Status)
 			break
+
+		} else if pinTrack.Status == TrackerStatusRemote {
+			continue
 		}
 		iPinStatus = ipfsStorageStatus(pinTrack.Status)
 	}
-
-	fmt.Printf("%s", string(resBytes))
 
 	return iPinStatus, nil
 }
@@ -99,6 +100,8 @@ func ipfsStorageStatus(icPinstatus string) string {
 		return ipfsstorage.PIN_STATUS_PINNING
 	case TrackerStatusPinned:
 		return ipfsstorage.PIN_STATUS_PINNED
+	case TrackerStatusUnpinned:
+		return ipfsstorage.PIN_STATUS_UNPINNED
 	default:
 		return ipfsstorage.PIN_STATUS_UNKOWN
 	}

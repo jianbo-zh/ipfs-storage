@@ -4,6 +4,10 @@ type Response200 struct {
 	CID string `json:"cid"`
 }
 
+type Response404 struct {
+	Message string `json:"message"`
+}
+
 type StatusResponse200 struct {
 	CID     string `json:"cid"`
 	DagSize int64  `json:"dagSize"`

@@ -5,6 +5,11 @@ type Response200 struct {
 	Value RespPut `json:"value"`
 }
 
+type Response404 struct {
+	Ok    bool    `json:"ok"`
+	Error RespErr `json:"error"`
+}
+
 type FileInfo struct {
 	Name string `json:"name"`
 	Type string `json:"type"`
@@ -41,6 +46,11 @@ type RespPut struct {
 	Pin     PinStatus  `json:"pin"`
 	Files   []FileInfo `json:"files"`
 	Deals   []DealInfo `json:"deals"`
+}
+
+type RespErr struct {
+	Name    string `json:"name"`
+	Message string `json:"message"`
 }
 
 type DeleteResponse200 struct {

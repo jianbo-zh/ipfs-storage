@@ -47,7 +47,12 @@ func (cli *client) Status(ctx context.Context, cid string) (pinStatus ipfsstorag
 		return
 	}
 
-	if response.StatusCode != 200 {
+	if response.StatusCode == http.StatusNotFound {
+		// not found
+		return ipfsstorage.PIN_STATUS_UNPINNED, nil
+	}
+
+	if response.StatusCode != http.StatusOK {
 		err = errors.New(fmt.Sprintf("[%d]%s", response.StatusCode, string(resBytes)))
 		return
 	}
@@ -73,8 +78,6 @@ func (cli *client) Status(ctx context.Context, cid string) (pinStatus ipfsstorag
 		}
 		iPinStatus = ipfsStorageStatus(pin.Status)
 	}
-
-	fmt.Printf("%s", string(resBytes))
 
 	return iPinStatus, nil
 }
