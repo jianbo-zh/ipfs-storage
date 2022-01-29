@@ -37,10 +37,10 @@ type UploadParam struct {
 }
 
 type UploadCarParam struct {
-	IOReader io.Reader `json:"IOReader"`
-	Name     string    `json:"name"`
-	Size     int64     `json:"size"`
-	Mime     string    `json:"mime"`
+	FilePath string `json:"filePath"`
+	Name     string `json:"name"`
+	Size     int64  `json:"size"`
+	Mime     string `json:"mime"`
 }
 
 type UploadCidParam struct {
