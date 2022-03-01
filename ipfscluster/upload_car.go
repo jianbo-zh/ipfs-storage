@@ -10,6 +10,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/url"
+	"os"
 
 	"github.com/alanshaw/go-carbites"
 	"github.com/jianbo-zh/go-errors"
@@ -20,13 +21,18 @@ import (
 func (cli *client) UploadCar(ctx context.Context, fcar ipfsstorage.UploadCarParam) (cid string, err error) {
 
 	if fcar.Size <= MAX_REQUEST_BODY_SIZE {
-		// small car file
-		return cli.uploadCar(ctx, fcar.IOReader, fcar.Name)
+		// small car file, upload directly
+		ofile, err := os.Open(fcar.FilePath)
+		if err != nil {
+			return "", errors.New("open car file error", errors.WithError(err))
+		}
+		defer ofile.Close()
+
+		return cli.uploadCar(ctx, ofile, fcar.Name)
 	}
 
 	// big car file
-	strategy := carbites.Treewalk
-	spltr, err := carbites.Split(fcar.IOReader, MAX_REQUEST_BODY_SIZE, strategy)
+	spltr, err := carbites.NewTreewalkSplitterFromPath(fcar.FilePath, MAX_REQUEST_BODY_SIZE)
 	if err != nil {
 		err = errors.New("carbites split error", errors.WithError(err))
 		return
@@ -114,8 +120,6 @@ func (cli *client) uploadCar(ctx context.Context, fileReader io.Reader, fileName
 		)
 		return
 	}
-
-	fmt.Printf("%s", string(resBytes))
 
 	return res.CID.String(), nil
 }
