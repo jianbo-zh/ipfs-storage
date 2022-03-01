@@ -13,9 +13,10 @@ import (
 )
 
 const (
-	PIN_STATUS_QUEUED  = "PinQueued"
-	PIN_STATUS_PINNING = "Pinning"
-	PIN_STATUS_PINNED  = "Pinned"
+	PIN_STATUS_QUEUED   = "PinQueued"
+	PIN_STATUS_PINNING  = "Pinning"
+	PIN_STATUS_PINNED   = "Pinned"
+	PIN_STATUS_UNPINNED = "Unpinned"
 )
 
 func (cli *client) Status(ctx context.Context, cid string) (pinStatus ipfsstorage.PinStatus, err error) {
@@ -91,6 +92,8 @@ func ipfsStorageStatus(web3Pinstatus string) string {
 		return ipfsstorage.PIN_STATUS_PINNING
 	case PIN_STATUS_PINNED:
 		return ipfsstorage.PIN_STATUS_PINNED
+	case PIN_STATUS_UNPINNED:
+		return ipfsstorage.PIN_STATUS_UNPINNED
 	default:
 		return ipfsstorage.PIN_STATUS_UNKOWN
 	}
