@@ -121,5 +121,5 @@ func (cli *client) uploadCar(ctx context.Context, fileReader io.Reader, fileName
 		return
 	}
 
-	return res.CID.String(), nil
+	return res.CID, nil
 }

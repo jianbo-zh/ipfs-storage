@@ -62,5 +62,5 @@ func (cli *client) UploadCid(ctx context.Context, fcid ipfsstorage.UploadCidPara
 
 	fmt.Printf("%s", string(resBytes))
 
-	return res.CID.String(), nil
+	return res.CID, nil
 }

@@ -86,5 +86,5 @@ func (cli *client) Upload(ctx context.Context, file ipfsstorage.UploadParam) (ci
 
 	fmt.Printf("%s", string(resBytes))
 
-	return res.CID.String(), nil
+	return res.CID, nil
 }
