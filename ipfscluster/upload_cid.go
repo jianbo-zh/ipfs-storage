@@ -55,7 +55,17 @@ func (cli *client) UploadCid(ctx context.Context, fcid ipfsstorage.UploadCidPara
 		return
 	}
 
-	fmt.Printf("%s", string(resBytes))
+	cidRoot, exists := res.CID["/"]
+	if !exists {
+		err = errors.New("response body cid format error")
+		return
+	}
 
-	return res.CID, nil
+	cid, ok := cidRoot.(string)
+	if !ok {
+		err = errors.New("response body cid format error")
+		return
+	}
+
+	return cid, nil
 }
