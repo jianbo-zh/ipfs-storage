@@ -360,8 +360,8 @@ github.com/jbenet/goprocess v0.1.4/go.mod h1:5yspPrukOVuOLORacaBi858NqyClJPQxYZl
 github.com/jellevandenhooff/dkim v0.0.0-20150330215556-f50fe3d243e1/go.mod h1:E0B/fFc00Y+Rasa88328GlI/XbtyysCtTHZS8h7IrBU=
 github.com/jessevdk/go-flags v0.0.0-20141203071132-1679536dcc89/go.mod h1:4FA24M0QyGHXBuZZK/XkWh8h0e1EYbRYJSGM75WSRxI=
 github.com/jessevdk/go-flags v1.4.0/go.mod h1:4FA24M0QyGHXBuZZK/XkWh8h0e1EYbRYJSGM75WSRxI=
-github.com/jianbo-zh/go-errors v0.0.0-20211127135714-d18a90faa197 h1:YIB5VXKdSHetAfIrT7wCwm9mxgTClqv1KRSAmKBy5Ho=
-github.com/jianbo-zh/go-errors v0.0.0-20211127135714-d18a90faa197/go.mod h1:rQTw8iWsyn3k8FyaXg6xovKfGg0wRhsIu2xSZkPPCiQ=
+github.com/jianbo-zh/go-errors v1.1.0 h1:QYR4mrDTpqRDKtrXJ53RvHOEH0uZUGJFvIDcQw7Pn5s=
+github.com/jianbo-zh/go-errors v1.1.0/go.mod h1:rQTw8iWsyn3k8FyaXg6xovKfGg0wRhsIu2xSZkPPCiQ=
 github.com/jianbo-zh/go-log v0.0.0-20211126081805-80b2eb71e535 h1:hpF/Ijp3oq4Jy88UjGjNLN8RCjR9xLLP0E/QwIhy2y4=
 github.com/jianbo-zh/go-log v0.0.0-20211126081805-80b2eb71e535/go.mod h1:eKNYteFauqc2eEZzx/AUu8Z+vH/0NlgkSmob5IikANM=
 github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af/go.mod h1:Nht3zPeWKUH0NzdCt2Blrr5ys8VGpn0CEB0cQHVjt7k=

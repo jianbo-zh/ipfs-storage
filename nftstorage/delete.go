@@ -28,27 +28,22 @@ func (cli *client) Delete(ctx context.Context, cid string) (ok bool, err error) 
 
 	response, err := httpCli.Do(&req)
 	if err != nil {
-		err = errors.New("http request error", errors.WithError(err))
+		err = errors.New("http request error").With(errors.Inner(err))
 		return
 	}
 	defer response.Body.Close()
 
 	resBytes, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		err = errors.New("ioutile read body error", errors.WithError(err))
+		err = errors.New("ioutile read body error").With(errors.Inner(err))
 		return
 	}
 
 	var resp200 DeleteResponse200
 	err = json.Unmarshal(resBytes, &resp200)
 	if err != nil {
-		err = errors.New(
-			"json unmarshal error",
-			errors.WithError(err),
-			errors.WithContext(errors.Context{
-				"response": string(resBytes),
-			}),
-		)
+		err = errors.New("json unmarshal error").
+			With(errors.Inner(err), errors.Playload(errors.MapData{"response": string(resBytes)}))
 		return
 	}
 

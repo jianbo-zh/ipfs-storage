@@ -24,7 +24,7 @@ func (cli *client) UploadCar(ctx context.Context, fcar ipfsstorage.UploadCarPara
 		// small car file, upload directly
 		ofile, err := os.Open(fcar.FilePath)
 		if err != nil {
-			return "", errors.New("open car file error", errors.WithError(err))
+			return "", errors.New("open car file error").With(errors.Inner(err))
 		}
 		defer ofile.Close()
 
@@ -34,7 +34,7 @@ func (cli *client) UploadCar(ctx context.Context, fcar ipfsstorage.UploadCarPara
 	// big car file
 	spltr, err := carbites.NewTreewalkSplitterFromPath(fcar.FilePath, MAX_REQUEST_BODY_SIZE)
 	if err != nil {
-		err = errors.New("carbites split error", errors.WithError(err))
+		err = errors.New("carbites split error").With(errors.Inner(err))
 		return
 	}
 
@@ -45,12 +45,12 @@ func (cli *client) UploadCar(ctx context.Context, fcar ipfsstorage.UploadCarPara
 				break
 			}
 
-			return cid, errors.New("carbites split next error", errors.WithError(err))
+			return cid, errors.New("carbites split next error").With(errors.Inner(err))
 		}
 
 		cid, err = cli.uploadCar(ctx, chunkCar, fcar.Name)
 		if err != nil {
-			return cid, errors.New("upload chunk car error", errors.WithError(err))
+			return cid, errors.New("upload chunk car error").With(errors.Inner(err))
 		}
 	}
 
@@ -66,12 +66,12 @@ func (cli *client) uploadCar(ctx context.Context, fileReader io.Reader, fileName
 
 	fileWriter, err := bodyWriter.CreateFormFile("file", fileName)
 	if err != nil {
-		return cid, errors.New("create form file error", errors.WithError(err))
+		return cid, errors.New("create form file error").With(errors.Inner(err))
 	}
 
 	_, err = io.Copy(fileWriter, fileReader)
 	if err != nil {
-		return cid, errors.New("io copy error", errors.WithError(err))
+		return cid, errors.New("io copy error").With(errors.Inner(err))
 	}
 
 	contentType := bodyWriter.FormDataContentType()
@@ -92,14 +92,14 @@ func (cli *client) uploadCar(ctx context.Context, fileReader io.Reader, fileName
 
 	response, err := httpCli.Do(&req)
 	if err != nil {
-		err = errors.New("http request error", errors.WithError(err))
+		err = errors.New("http request error").With(errors.Inner(err))
 		return
 	}
 	defer response.Body.Close()
 
 	resBytes, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		err = errors.New("ioutile read body error", errors.WithError(err))
+		err = errors.New("ioutile read body error").With(errors.Inner(err))
 		return
 	}
 
@@ -111,13 +111,8 @@ func (cli *client) uploadCar(ctx context.Context, fileReader io.Reader, fileName
 	var res ResponseCar200
 	err = json.Unmarshal(resBytes, &res)
 	if err != nil {
-		err = errors.New(
-			"json unmarshal response error",
-			errors.WithError(err),
-			errors.WithContext(errors.Context{
-				"response": string(resBytes),
-			}),
-		)
+		err = errors.New("json unmarshal response error").
+			With(errors.Inner(err), errors.Playload(errors.MapData{"response": string(resBytes)}))
 		return
 	}
 
