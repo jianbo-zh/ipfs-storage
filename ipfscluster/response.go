@@ -14,8 +14,8 @@ type ResponseCar200 struct {
 }
 
 type ResponseCid200 struct {
-	Name string                 `json:"name"`
-	CID  map[string]interface{} `json:"cid"`
+	Name string `json:"name"`
+	CID  string `json:"cid"`
 	// many other fields ignore
 }
 
