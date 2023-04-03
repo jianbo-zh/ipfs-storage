@@ -26,9 +26,10 @@ type DeleteResponse200 struct {
 }
 
 type StatusResponse200 struct {
-	CID     string                   `json:"cid"`
-	Name    string                   `json:"name"`
-	PeerMap map[string]PeerPinStatus `json:"peer_map"`
+	CID         string                   `json:"cid"`
+	Name        string                   `json:"name"`
+	Allocations []string                 `json:"allocations"`
+	PeerMap     map[string]PeerPinStatus `json:"peer_map"`
 }
 
 type PeerPinStatus struct {

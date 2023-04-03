@@ -72,15 +72,20 @@ func (cli *client) Status(ctx context.Context, cid string) (pinStatus string, er
 	}
 
 	iPinStatus := ipfsstorage.PIN_STATUS_UNKOWN
-	for _, pinTrack := range res.PeerMap {
-		if pinTrack.Status == TrackerStatusPinned {
-			iPinStatus = ipfsStorageStatus(pinTrack.Status)
-			break
+	if len(res.Allocations) == 0 {
+		iPinStatus = ipfsstorage.PIN_STATUS_UNPINNED
 
-		} else if pinTrack.Status == TrackerStatusRemote {
-			continue
+	} else {
+		for _, peerID := range res.Allocations {
+			if pinTrack, exists := res.PeerMap[peerID]; exists {
+				if pinTrack.Status == TrackerStatusPinned {
+					iPinStatus = ipfsStorageStatus(pinTrack.Status)
+					break
+				} else {
+					iPinStatus = ipfsStorageStatus(pinTrack.Status)
+				}
+			}
 		}
-		iPinStatus = ipfsStorageStatus(pinTrack.Status)
 	}
 
 	return iPinStatus, nil
